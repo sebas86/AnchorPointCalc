@@ -39,6 +39,12 @@
 @property (assign) IBOutlet NSTextField *tileWidth;
 @property (assign) IBOutlet NSTextField *tilesRows;
 @property (assign) IBOutlet NSTextField *tilesCols;
+@property (assign) IBOutlet NSTextField *tilesScaleX;
+@property (assign) IBOutlet NSTextField *tilesScaleY;
+@property (assign) IBOutlet NSTextField *tilesAnchorX;
+@property (assign) IBOutlet NSTextField *tilesAnchorY;
+@property (assign) IBOutlet NSTextField *tilesRotate;
+
 @property (assign) IBOutlet NSMenuItem *openRecentItems;
 @property (assign) IBOutlet NSMenuItem *clearRecentItems;
 
@@ -55,6 +61,11 @@
 -(IBAction) setHeight:(id)sender;
 -(IBAction) setRows:(id)sender;
 -(IBAction) setCols:(id)sender;
+-(IBAction) setScaleX:(id)sender;
+-(IBAction) setScaleY:(id)sender;
+-(IBAction) setAnchorPointX:(id)sender;
+-(IBAction) setAnchorPointY:(id)sender;
+-(IBAction) setRotate:(id)sender;
 
 -(IBAction) dataWasChanged:(id)sender;
 
