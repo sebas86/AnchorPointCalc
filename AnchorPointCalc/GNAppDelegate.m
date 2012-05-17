@@ -187,7 +187,7 @@
 	NSMutableArray* invalidFiles = nil;
     for (NSString* path in list)
     {
-        NSImage* image = [[NSImage alloc] initWithContentsOfFile:path];
+        NSImage* image = [[[NSImage alloc] initWithContentsOfFile:path] autorelease];
         
         if (image)
         {
@@ -631,6 +631,8 @@
         [preview addItemWithImage:image];
         [preview setItemPosition:idx x:item.x y:item.y];
         [preview setItemVisible:idx visible:item.visible];
+		
+		[image release];
     }];
     
 	[self updateProperties];

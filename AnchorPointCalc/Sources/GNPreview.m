@@ -138,6 +138,7 @@
 {
     GNPreviewItem* item = [[GNPreviewItem alloc] initWithImage:image];
     [items addObject:item];
+	[item release];
     
     [self needsRedraw];
 }
