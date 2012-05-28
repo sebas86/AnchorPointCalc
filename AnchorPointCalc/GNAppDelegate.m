@@ -32,6 +32,11 @@
 @synthesize cleanButton;
 @synthesize tilesRows;
 @synthesize tilesCols;
+@synthesize tilesScaleX;
+@synthesize tilesScaleY;
+@synthesize tilesAnchorX;
+@synthesize tilesAnchorY;
+@synthesize tilesRotate;
 @synthesize openRecentItems;
 @synthesize clearRecentItems;
 @synthesize tileHeight;
@@ -109,6 +114,11 @@
     [userDefaults setObject:[NSNumber numberWithFloat:preview.tilesSize.y] forKey:@"tileHeight"];
     [userDefaults setObject:[NSNumber numberWithFloat:preview.tilesRows] forKey:@"tilesRows"];
     [userDefaults setObject:[NSNumber numberWithFloat:preview.tilesCols] forKey:@"tilesCols"];
+	[userDefaults setObject:[NSNumber numberWithFloat:preview.tilesScale.x] forKey:@"tilesScaleX"];
+	[userDefaults setObject:[NSNumber numberWithFloat:preview.tilesScale.y] forKey:@"tilesScaleY"];
+	[userDefaults setObject:[NSNumber numberWithFloat:preview.tilesRotate] forKey:@"tilesRotate"];
+	[userDefaults setObject:[NSNumber numberWithFloat:preview.tilesAnchorPoint.x] forKey:@"tilesAnchorPointX"];
+	[userDefaults setObject:[NSNumber numberWithFloat:preview.tilesAnchorPoint.y] forKey:@"tilesAnchorPointY"];
     
 	[orgWindowTitle release];
 	
@@ -180,7 +190,7 @@
 	NSMutableArray* invalidFiles = nil;
     for (NSString* path in list)
     {
-        NSImage* image = [[NSImage alloc] initWithContentsOfFile:path];
+        NSImage* image = [[[NSImage alloc] initWithContentsOfFile:path] autorelease];
         
         if (image)
         {
@@ -312,10 +322,16 @@
 
 -(void) updateProperties
 {
-    self.tileWidth.stringValue = [[NSNumber numberWithFloat:preview.tilesSize.x] stringValue];
-    self.tileHeight.stringValue = [[NSNumber numberWithFloat:preview.tilesSize.y] stringValue];
-    self.tilesRows.stringValue = [[NSNumber numberWithFloat:preview.tilesRows] stringValue];
-    self.tilesCols.stringValue = [[NSNumber numberWithFloat:preview.tilesCols] stringValue];
+	self.tileWidth.floatValue = preview.tilesSize.x;
+	self.tileHeight.floatValue = preview.tilesSize.y;
+	self.tilesRows.intValue = preview.tilesRows;
+	self.tilesCols.intValue = preview.tilesCols;
+	self.tilesScaleX.floatValue = preview.tilesScale.x;
+	self.tilesScaleY.floatValue = preview.tilesScale.y;
+	self.tilesAnchorX.floatValue = preview.tilesAnchorPoint.x;
+	self.tilesAnchorY.floatValue = preview.tilesAnchorPoint.y;
+	self.tilesRotate.floatValue = preview.tilesRotate * 180.0f / M_PI;
+	
 	[self.scaleSlider setFloatValue:(preview.scale - 0.5f) * 100.0f];
 	[self.scaleText setFloatValue:preview.scale];
 }
@@ -332,7 +348,7 @@
 
 -(IBAction) setHeight:(id)sender
 {
-	const float newValue = [[sender stringValue] floatValue];
+	const float newValue = [sender floatValue];
 	if (preview.tilesSize.y != newValue)
 	{
 		preview.tilesSize = CGPointMake(preview.tilesSize.x, newValue);
@@ -342,7 +358,7 @@
 
 -(IBAction) setRows:(id)sender
 {
-	const int newValue = [[sender stringValue] intValue];
+	const int newValue = [sender intValue];
 	if (preview.tilesRows != newValue)
 	{
 		preview.tilesRows = newValue;
@@ -352,10 +368,60 @@
 
 -(IBAction) setCols:(id)sender
 {
-	const int newValue = [[sender stringValue] intValue];
+	const int newValue = [sender intValue];
 	if (preview.tilesCols != newValue)
 	{
 		preview.tilesCols = newValue;
+		itemsData.wasChanged = YES;
+	}
+}
+
+-(IBAction) setScaleX:(id)sender
+{
+	const float newValue = [sender floatValue];
+	if (preview.tilesScale.x != newValue)
+	{
+		preview.tilesScale = CGPointMake(newValue, preview.tilesScale.y);
+		itemsData.wasChanged = YES;
+	}
+}
+
+-(IBAction) setScaleY:(id)sender
+{
+	const float newValue = [sender floatValue];
+	if (preview.tilesScale.y != newValue)
+	{
+		preview.tilesScale = CGPointMake(preview.tilesScale.x, newValue);
+		itemsData.wasChanged = YES;
+	}
+}
+
+-(IBAction) setAnchorPointX:(id)sender
+{
+	const float newValue = [sender floatValue];
+	if (preview.tilesAnchorPoint.x != newValue)
+	{
+		preview.tilesAnchorPoint = CGPointMake(newValue, preview.tilesAnchorPoint.y);
+		itemsData.wasChanged = YES;
+	}
+}
+
+-(IBAction) setAnchorPointY:(id)sender
+{
+	const float newValue = [sender floatValue];
+	if (preview.tilesAnchorPoint.y != newValue)
+	{
+		preview.tilesAnchorPoint = CGPointMake(preview.tilesAnchorPoint.x, newValue);
+		itemsData.wasChanged = YES;
+	}
+}
+
+-(IBAction) setRotate:(id)sender
+{
+	const float newValue = [sender floatValue] * M_PI / 180.0f;
+	if (preview.tilesRotate != newValue)
+	{
+		preview.tilesRotate = newValue;
 		itemsData.wasChanged = YES;
 	}
 }
@@ -529,6 +595,8 @@
     NSNumber* dTilesRotate = [project objectForKey:@"tilesRotate"];
     NSNumber* dTilesScaleX = [project objectForKey:@"tilesScaleX"];
     NSNumber* dTilesScaleY = [project objectForKey:@"tilesScaleY"];
+	NSNumber* dTilesAnchorPointX = [project objectForKey:@"tilesAnchorPointX"];
+	NSNumber* dTilesAnchorPointY = [project objectForKey:@"tilesAnchorPointY"];
 	
     if ([dTileWidth isKindOfClass:[NSNumber class]] && [dTileHeight isKindOfClass:[NSNumber class]])
     {
@@ -550,6 +618,11 @@
     {
         preview.tilesScale = CGPointMake([dTilesScaleX floatValue], [dTilesScaleY floatValue]);
     }
+	
+	if ([dTilesAnchorPointX isKindOfClass:[NSNumber class]] && [dTilesAnchorPointY isKindOfClass:[NSNumber class]])
+    {
+        preview.tilesAnchorPoint = CGPointMake([dTilesAnchorPointX floatValue], [dTilesAnchorPointY floatValue]);
+    }
     
         
     [preview removeAll];
@@ -561,9 +634,11 @@
         [preview addItemWithImage:image];
         [preview setItemPosition:idx x:item.x y:item.y];
         [preview setItemVisible:idx visible:item.visible];
+		
+		[image release];
     }];
     
-    [self updateScaleWithSlider:scaleSlider];
+	[self updateProperties];
     
     self.currentProjectPath = path;
 }
@@ -577,6 +652,11 @@
     [project setObject:[NSNumber numberWithFloat:preview.tilesSize.y] forKey:@"tileHeight"];
     [project setObject:[NSNumber numberWithFloat:preview.tilesRows] forKey:@"tilesRows"];
     [project setObject:[NSNumber numberWithFloat:preview.tilesCols] forKey:@"tilesCols"];
+	[project setObject:[NSNumber numberWithFloat:preview.tilesScale.x] forKey:@"tilesScaleX"];
+	[project setObject:[NSNumber numberWithFloat:preview.tilesScale.y] forKey:@"tilesScaleY"];
+	[project setObject:[NSNumber numberWithFloat:preview.tilesAnchorPoint.x] forKey:@"tilesAnchorPointX"];
+	[project setObject:[NSNumber numberWithFloat:preview.tilesAnchorPoint.y] forKey:@"tilesAnchorPointY"];
+	[project setObject:[NSNumber numberWithFloat:preview.tilesRotate] forKey:@"tilesRotate"];
     
     if ([project writeToFile:path atomically:YES])
 	{

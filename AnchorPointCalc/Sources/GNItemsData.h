@@ -25,7 +25,7 @@
 -(NSArray*) toArrayWithPathsRelativeTo:(NSString*)path;
 
 -(id) initWithFile:(NSString*)file error:(NSError**)error;
--(void) writeToFile:(NSString*)file error:(NSError**)error;
+-(BOOL) writeToFile:(NSString*)file error:(NSError**)error;
 
 -(void) addItem:(GNItemsDataItem*)item;
 -(GNItemsDataItem*) itemAtIndex:(NSUInteger)index;

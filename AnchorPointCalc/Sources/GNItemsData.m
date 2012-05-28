@@ -114,9 +114,10 @@
     return self;
 }
 
--(void) writeToFile:(NSString*)file error:(NSError**)error
+-(BOOL) writeToFile:(NSString*)file error:(NSError**)error
 {
     // TODO: write data to file
+	return NO;
 }
 
 -(id)initWithFile:(NSString*)file error:(NSError**)error
