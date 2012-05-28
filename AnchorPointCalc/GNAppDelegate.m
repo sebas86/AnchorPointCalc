@@ -39,6 +39,7 @@
 @synthesize tilesRotate;
 @synthesize openRecentItems;
 @synthesize clearRecentItems;
+@synthesize ingoreImageDPICheckBox;
 @synthesize tileHeight;
 @synthesize tileWidth;
 
@@ -69,7 +70,11 @@
 
 -(void) applicationDidFinishLaunching:(NSNotification*)aNotification
 {
-    [NSImage setIgnoreDPI:YES];
+    NSNumber* shouldIgnoreDPINumber = [[NSUserDefaults standardUserDefaults] objectForKey:@"ignoreDPI"];
+    BOOL shouldIgnoreDPI = ([shouldIgnoreDPINumber isKindOfClass:[NSNumber class]] ? [shouldIgnoreDPINumber boolValue] : YES);
+    
+    [NSImage setIgnoreDPI:shouldIgnoreDPI];
+    [self.ingoreImageDPICheckBox setState:shouldIgnoreDPI];
     
 	orgWindowTitle = [[[self window] title] retain];
 	
@@ -119,6 +124,8 @@
 	[userDefaults setObject:[NSNumber numberWithFloat:preview.tilesRotate] forKey:@"tilesRotate"];
 	[userDefaults setObject:[NSNumber numberWithFloat:preview.tilesAnchorPoint.x] forKey:@"tilesAnchorPointX"];
 	[userDefaults setObject:[NSNumber numberWithFloat:preview.tilesAnchorPoint.y] forKey:@"tilesAnchorPointY"];
+    [userDefaults setObject:[NSNumber numberWithBool:[NSImage ignoreDPI]] forKey:@"ignoreDPI"];
+    [userDefaults synchronize];
     
 	[orgWindowTitle release];
 	
@@ -135,7 +142,8 @@
 
 -(IBAction) updateScaleWithSlider:(id)sender
 {
-    const float scale = 0.5f + roundf(self.scaleSlider.floatValue) / 100.0f;
+    const float scale = 0.5f + roundf([sender floatValue]) / 100.0f;
+    [sender setFloatValue:[sender floatValue]];
     [self.scaleText setFloatValue:scale];
     
     preview.scale = scale;
@@ -143,9 +151,11 @@
 
 -(IBAction) updateScaleWithText:(id)sender
 {
+    
 	const float minValue = 0.5f + [self.scaleSlider minValue] / 100.0f;
 	const float maxValue = 0.5f + [self.scaleSlider maxValue] / 100.0f;
-    float scale = self.scaleText.floatValue;
+    float scale = [sender floatValue];
+    [sender setFloatValue:scale];
     
     if (scale < minValue)
         scale = minValue;
@@ -338,7 +348,8 @@
 
 -(IBAction) setWidth:(id)sender
 {
-	const float newValue = [[sender stringValue] floatValue];
+	const float newValue = [sender floatValue];
+    [sender setFloatValue:newValue];
 	if (preview.tilesSize.x != newValue)
 	{
 		preview.tilesSize = CGPointMake(newValue, preview.tilesSize.y);
@@ -349,6 +360,7 @@
 -(IBAction) setHeight:(id)sender
 {
 	const float newValue = [sender floatValue];
+    [sender setFloatValue:newValue];
 	if (preview.tilesSize.y != newValue)
 	{
 		preview.tilesSize = CGPointMake(preview.tilesSize.x, newValue);
@@ -359,6 +371,7 @@
 -(IBAction) setRows:(id)sender
 {
 	const int newValue = [sender intValue];
+    [sender setIntValue:newValue];
 	if (preview.tilesRows != newValue)
 	{
 		preview.tilesRows = newValue;
@@ -369,6 +382,7 @@
 -(IBAction) setCols:(id)sender
 {
 	const int newValue = [sender intValue];
+    [sender setIntValue:newValue];
 	if (preview.tilesCols != newValue)
 	{
 		preview.tilesCols = newValue;
@@ -379,6 +393,7 @@
 -(IBAction) setScaleX:(id)sender
 {
 	const float newValue = [sender floatValue];
+    [sender setFloatValue:newValue];
 	if (preview.tilesScale.x != newValue)
 	{
 		preview.tilesScale = CGPointMake(newValue, preview.tilesScale.y);
@@ -389,6 +404,7 @@
 -(IBAction) setScaleY:(id)sender
 {
 	const float newValue = [sender floatValue];
+    [sender setFloatValue:newValue];
 	if (preview.tilesScale.y != newValue)
 	{
 		preview.tilesScale = CGPointMake(preview.tilesScale.x, newValue);
@@ -399,6 +415,7 @@
 -(IBAction) setAnchorPointX:(id)sender
 {
 	const float newValue = [sender floatValue];
+    [sender setFloatValue:newValue];
 	if (preview.tilesAnchorPoint.x != newValue)
 	{
 		preview.tilesAnchorPoint = CGPointMake(newValue, preview.tilesAnchorPoint.y);
@@ -409,6 +426,7 @@
 -(IBAction) setAnchorPointY:(id)sender
 {
 	const float newValue = [sender floatValue];
+    [sender setFloatValue:newValue];
 	if (preview.tilesAnchorPoint.y != newValue)
 	{
 		preview.tilesAnchorPoint = CGPointMake(preview.tilesAnchorPoint.x, newValue);
@@ -419,6 +437,7 @@
 -(IBAction) setRotate:(id)sender
 {
 	const float newValue = [sender floatValue] * M_PI / 180.0f;
+    [sender setFloatValue:[sender floatValue]];
 	if (preview.tilesRotate != newValue)
 	{
 		preview.tilesRotate = newValue;
@@ -529,8 +548,16 @@
 {
 	if ([self canSaflyCloseCurrentProject])
 	{
-		exit(0);
+        [window close];
 	}
+}
+
+- (IBAction)ignoreImageDPIChanged:(id)sender
+{
+    BOOL shouldIgnoreDPI = !![self.ingoreImageDPICheckBox state];
+    [NSImage setIgnoreDPI:shouldIgnoreDPI];
+    
+    [self.ingoreImageDPICheckBox setState:shouldIgnoreDPI];
 }
 
 

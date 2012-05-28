@@ -13,6 +13,11 @@ static BOOL ignoreDPI = NO;
 
 @implementation NSImage (Extension)
 
++(BOOL) ignoreDPI
+{
+    return ignoreDPI;
+}
+
 +(void) setIgnoreDPI:(BOOL)value
 {
     ignoreDPI = value;

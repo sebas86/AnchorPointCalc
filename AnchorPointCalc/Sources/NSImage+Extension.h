@@ -9,5 +9,6 @@
 #import <AppKit/AppKit.h>
 
 @interface NSImage (Extension)
++(BOOL) ignoreDPI;
 +(void) setIgnoreDPI:(BOOL)value;
 @end

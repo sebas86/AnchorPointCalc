@@ -48,6 +48,9 @@
 @property (assign) IBOutlet NSMenuItem *openRecentItems;
 @property (assign) IBOutlet NSMenuItem *clearRecentItems;
 
+@property (assign) IBOutlet NSButton *ingoreImageDPICheckBox;
+
+
 -(IBAction) updateScaleWithSlider:(id)sender;
 -(IBAction) updateScaleWithText:(id)sender;
 
@@ -79,5 +82,7 @@
 -(IBAction) exportJSON:(id)sender;
 -(IBAction) closeCurrent:(id)sender;
 -(IBAction) quit:(id)sender;
+
+-(IBAction) ignoreImageDPIChanged:(id)sender;
 
 @end
