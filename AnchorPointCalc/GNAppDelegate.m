@@ -8,6 +8,7 @@
 
 #import "CJSONSerializer.h"
 #import "GNAppDelegate.h"
+#import "NSImage+Extension.h"
 
 
 @interface GNAppDelegate ()
@@ -63,6 +64,8 @@
 
 -(void) applicationDidFinishLaunching:(NSNotification*)aNotification
 {
+    [NSImage setIgnoreDPI:YES];
+    
 	orgWindowTitle = [[[self window] title] retain];
 	
     itemsData = [[GNItemsData alloc] init];
@@ -359,7 +362,7 @@
 
 - (IBAction)dataWasChanged:(id)sender
 {
-    [itemsData enumerateItemsWithBlock:^(GNItemsDataItem* item, int idx, BOOL *stop) {
+    [itemsData enumerateItemsWithBlock:^(GNItemsDataItem* item, NSUInteger idx, BOOL *stop) {
         [preview setItemPosition:idx x:item.x y:item.y];
         [preview setItemVisible:idx visible:item.visible];
     }];
@@ -400,7 +403,7 @@
 {
     NSMenu* submenu = [openRecentItems submenu];
     
-    for (int i = submenu.numberOfItems - 1; i > 0; --i)
+    for (NSUInteger i = submenu.numberOfItems - 1; i > 0; --i)
     {
         [submenu removeItemAtIndex:i];
     }
@@ -428,7 +431,7 @@
         CJSONSerializer* serializer = [CJSONSerializer serializer];
         NSMutableDictionary* assets = [NSMutableDictionary dictionary];
         
-        [itemsData enumerateItemsWithBlock:^(GNItemsDataItem* item, int idx, BOOL *stop) {
+        [itemsData enumerateItemsWithBlock:^(GNItemsDataItem* item, NSUInteger idx, BOOL *stop) {
             NSArray* anchor = [NSArray arrayWithObjects:
                                [NSNumber numberWithFloat:item.anchor.x],
                                [NSNumber numberWithFloat:item.anchor.y],
@@ -550,7 +553,7 @@
     
         
     [preview removeAll];
-    [itemsData enumerateItemsWithBlock:^(GNItemsDataItem* item, int idx, BOOL *stop) {
+    [itemsData enumerateItemsWithBlock:^(GNItemsDataItem* item, NSUInteger idx, BOOL *stop) {
         NSImage* image = [[NSImage alloc] initWithContentsOfFile:item.path];
         
         item.imageSize = image.size;

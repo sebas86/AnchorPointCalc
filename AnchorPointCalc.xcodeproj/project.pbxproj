@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		88ABF67715738785007997EA /* NSImage+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 88ABF67615738785007997EA /* NSImage+Extension.m */; };
 		A13016041542CB1700839DDB /* GNPreviewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = A13016031542CB1700839DDB /* GNPreviewItem.m */; };
 		A13016071542D42600839DDB /* invalid-file-type.png in Resources */ = {isa = PBXBuildFile; fileRef = A13016051542D42600839DDB /* invalid-file-type.png */; };
 		A13016081542D42600839DDB /* question.png in Resources */ = {isa = PBXBuildFile; fileRef = A13016061542D42600839DDB /* question.png */; };
@@ -32,6 +33,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		88ABF67515738785007997EA /* NSImage+Extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSImage+Extension.h"; path = "Sources/NSImage+Extension.h"; sourceTree = "<group>"; };
+		88ABF67615738785007997EA /* NSImage+Extension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSImage+Extension.m"; path = "Sources/NSImage+Extension.m"; sourceTree = "<group>"; };
 		A13016021542CB1700839DDB /* GNPreviewItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GNPreviewItem.h; path = Sources/GNPreviewItem.h; sourceTree = "<group>"; };
 		A13016031542CB1700839DDB /* GNPreviewItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GNPreviewItem.m; path = Sources/GNPreviewItem.m; sourceTree = "<group>"; };
 		A13016051542D42600839DDB /* invalid-file-type.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "invalid-file-type.png"; sourceTree = "<group>"; };
@@ -166,6 +169,8 @@
 				A13476951542916200FBC3DC /* GNItemsDataItem.m */,
 				A13016021542CB1700839DDB /* GNPreviewItem.h */,
 				A13016031542CB1700839DDB /* GNPreviewItem.m */,
+				88ABF67515738785007997EA /* NSImage+Extension.h */,
+				88ABF67615738785007997EA /* NSImage+Extension.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -309,6 +314,7 @@
 				A1F03C69154523EE0069E2C7 /* CJSONScanner.m in Sources */,
 				A1F03C6A154523EE0069E2C7 /* CJSONSerializer.m in Sources */,
 				A1D921501545F76E002DD71D /* NSString+RelativePath.m in Sources */,
+				88ABF67715738785007997EA /* NSImage+Extension.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

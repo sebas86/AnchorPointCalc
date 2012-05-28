@@ -161,7 +161,7 @@
 	wasChanged = YES;
 }
 
--(void) enumerateItemsWithBlock:(void(^)(GNItemsDataItem*item,int idx,BOOL* stop))block
+-(void) enumerateItemsWithBlock:(void(^)(GNItemsDataItem*item,NSUInteger idx,BOOL* stop))block
 {
     BOOL stop = NO;
     for (NSUInteger i = 0; i < data.count && ! stop; ++i)

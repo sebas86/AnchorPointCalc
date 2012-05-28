@@ -31,6 +31,6 @@
 -(GNItemsDataItem*) itemAtIndex:(NSUInteger)index;
 -(void) removeItemAtIndex:(NSUInteger)index;
 -(void) removeAll;
--(void) enumerateItemsWithBlock:(void(^)(GNItemsDataItem*,int idx,BOOL* stop))block;
+-(void) enumerateItemsWithBlock:(void(^)(GNItemsDataItem*,NSUInteger idx,BOOL* stop))block;
 
 @end
