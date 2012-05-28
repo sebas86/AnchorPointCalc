@@ -204,14 +204,16 @@
 
 #pragma mark - Drawing code
 
+-(void) setFrame:(NSRect)frameRect
+{
+    [super setFrame:frameRect];
+    
+    [self updateOffset];
+}
+
 -(void) drawRect:(NSRect)dirtyRect
 {
 	const CGRect bounds = [self bounds];
-	
-	if ([self inLiveResize])
-	{
-		[self updateOffset];
-	}
 	
     CGSize size = bounds.size;
     CGContextRef c = [[NSGraphicsContext currentContext] graphicsPort];
