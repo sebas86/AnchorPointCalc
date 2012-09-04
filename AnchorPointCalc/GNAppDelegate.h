@@ -45,10 +45,14 @@
 @property (assign) IBOutlet NSTextField *tilesAnchorY;
 @property (assign) IBOutlet NSTextField *tilesRotate;
 
+
 @property (assign) IBOutlet NSMenuItem *openRecentItems;
 @property (assign) IBOutlet NSMenuItem *clearRecentItems;
 
 @property (assign) IBOutlet NSButton *ingoreImageDPICheckBox;
+@property (assign) IBOutlet NSButton *exportOnlyVisibleCheckBox;
+@property (assign) IBOutlet NSTextField *spriteSheetFileNameTextField;
+@property (assign) IBOutlet NSButton *removeFileExtensionInSpriteSheetsCheckBox;
 
 
 -(IBAction) updateScaleWithSlider:(id)sender;
@@ -80,6 +84,7 @@
 
 
 -(IBAction) exportJSON:(id)sender;
+-(IBAction) exportJSONForCocos2D:(id)sender;
 -(IBAction) closeCurrent:(id)sender;
 -(IBAction) quit:(id)sender;
 

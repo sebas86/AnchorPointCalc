@@ -40,6 +40,9 @@
 @synthesize openRecentItems;
 @synthesize clearRecentItems;
 @synthesize ingoreImageDPICheckBox;
+@synthesize exportOnlyVisibleCheckBox;
+@synthesize spriteSheetFileNameTextField;
+@synthesize removeFileExtensionInSpriteSheetsCheckBox;
 @synthesize tileHeight;
 @synthesize tileWidth;
 
@@ -515,18 +518,82 @@
         NSString* path = [[exportPanel URL] path];
         CJSONSerializer* serializer = [CJSONSerializer serializer];
         NSMutableDictionary* assets = [NSMutableDictionary dictionary];
+        BOOL exportAll = [exportOnlyVisibleCheckBox state] != NSOnState;
         
         [itemsData enumerateItemsWithBlock:^(GNItemsDataItem* item, NSUInteger idx, BOOL *stop) {
-            NSArray* anchor = [NSArray arrayWithObjects:
-                               [NSNumber numberWithFloat:item.anchor.x],
-                               [NSNumber numberWithFloat:item.anchor.y],
-                               nil];
-            
-            NSDictionary* itemDesc = [NSDictionary dictionaryWithObjectsAndKeys:
-                                      anchor, @"anchor",
-                                      nil];
-            
-            [assets setObject:itemDesc forKey:item.name];
+            if (exportAll || item.visible)
+            {
+                NSArray* anchor = [NSArray arrayWithObjects:
+                                   [NSNumber numberWithFloat:item.anchor.x],
+                                   [NSNumber numberWithFloat:item.anchor.y],
+                                   nil];
+                
+                NSDictionary* itemDesc = [NSDictionary dictionaryWithObjectsAndKeys:
+                                          anchor, @"anchor",
+                                          nil];
+                
+                [assets setObject:itemDesc forKey:item.name];
+            }
+        }];
+        
+        NSError* error = nil;
+        NSData* data = [serializer serializeDictionary:assets error:&error];
+        
+        [data writeToFile:path atomically:YES];
+    }
+}
+ 
+-(IBAction) exportJSONForCocos2D:(id)sender
+{
+    if ([exportPanel runModal])
+    {
+        NSString* path = [[exportPanel URL] path];
+        CJSONSerializer* serializer = [CJSONSerializer serializer];
+        NSMutableDictionary* assets = [NSMutableDictionary dictionary];
+        BOOL exportAll = [exportOnlyVisibleCheckBox state] != NSOnState;
+        BOOL removeFileExtensionInSpriteSheets = [removeFileExtensionInSpriteSheetsCheckBox state] == NSOnState;
+        NSString* spriteSheetFileName = [spriteSheetFileNameTextField stringValue];
+        
+        [itemsData enumerateItemsWithBlock:^(GNItemsDataItem* item, NSUInteger idx, BOOL *stop) {
+            if (exportAll || item.visible)
+            {
+                NSArray* anchor = [NSArray arrayWithObjects:
+                                   [NSNumber numberWithFloat:item.anchor.x],
+                                   [NSNumber numberWithFloat:item.anchor.y],
+                                   nil];
+                
+                NSString* type;
+                NSDictionary* spec;
+                
+                if (spriteSheetFileName.length)
+                {
+                    NSString* fileName = [item.path lastPathComponent];
+                    if (removeFileExtensionInSpriteSheets)
+                        fileName = [fileName stringByDeletingPathExtension];
+                    
+                    type = @"sprite";
+                    spec = [NSDictionary dictionaryWithObjectsAndKeys:
+                            spriteSheetFileName, @"spritesheetPlistFile",
+                            fileName, @"spriteName",
+                            anchor, @"anchor",
+                            nil];
+                }
+                else
+                {
+                    type = @"image";
+                    spec = [NSDictionary dictionaryWithObjectsAndKeys:
+                            [item.path lastPathComponent] , @"imageFile",
+                            anchor, @"anchor",
+                            nil];
+                }
+                
+                NSDictionary* itemDesc = [NSDictionary dictionaryWithObjectsAndKeys:
+                                          type, @"type",
+                                          spec, @"spec",
+                                          nil];
+                
+                [assets setObject:itemDesc forKey:item.name];
+            }
         }];
         
         NSError* error = nil;
@@ -624,6 +691,9 @@
     NSNumber* dTilesScaleY = [project objectForKey:@"tilesScaleY"];
 	NSNumber* dTilesAnchorPointX = [project objectForKey:@"tilesAnchorPointX"];
 	NSNumber* dTilesAnchorPointY = [project objectForKey:@"tilesAnchorPointY"];
+    NSString* dSpriteSheetFileName = [project objectForKey:@"spriteSheetFileName"];
+    NSNumber* dRemoveFileExtensionInSpriteSheets = [project objectForKey:@"removeFileExtensionInSpriteSheets"];
+    NSNumber* dExportOnlyVisible = [project objectForKey:@"exportOnlyVisible"];
 	
     if ([dTileWidth isKindOfClass:[NSNumber class]] && [dTileHeight isKindOfClass:[NSNumber class]])
     {
@@ -651,6 +721,20 @@
         preview.tilesAnchorPoint = CGPointMake([dTilesAnchorPointX floatValue], [dTilesAnchorPointY floatValue]);
     }
     
+    if ([dSpriteSheetFileName isKindOfClass:[NSString class]])
+    {
+        [spriteSheetFileNameTextField setStringValue:dSpriteSheetFileName];
+    }
+    
+    if ([dRemoveFileExtensionInSpriteSheets isKindOfClass:[NSNumber class]])
+    {
+        [removeFileExtensionInSpriteSheetsCheckBox setState:([dRemoveFileExtensionInSpriteSheets boolValue] ? NSOnState : NSOffState)];
+    }
+    
+    if ([dExportOnlyVisible isKindOfClass:[NSNumber class]])
+    {
+        [exportOnlyVisibleCheckBox setState:([dExportOnlyVisible boolValue] ? NSOnState : NSOffState)];
+    }
         
     [preview removeAll];
     [itemsData enumerateItemsWithBlock:^(GNItemsDataItem* item, NSUInteger idx, BOOL *stop) {
@@ -684,6 +768,11 @@
 	[project setObject:[NSNumber numberWithFloat:preview.tilesAnchorPoint.x] forKey:@"tilesAnchorPointX"];
 	[project setObject:[NSNumber numberWithFloat:preview.tilesAnchorPoint.y] forKey:@"tilesAnchorPointY"];
 	[project setObject:[NSNumber numberWithFloat:preview.tilesRotate] forKey:@"tilesRotate"];
+    [project setObject:[spriteSheetFileNameTextField stringValue] forKey:@"spriteSheetFileName"];
+    [project setObject:[NSNumber numberWithBool:[removeFileExtensionInSpriteSheetsCheckBox state] == NSOnState]
+                forKey:@"removeFileExtensionInSpriteSheets"];
+    [project setObject:[NSNumber numberWithBool:[exportOnlyVisibleCheckBox state] == NSOnState]
+                forKey:@"exportOnlyVisible"];
     
     if ([project writeToFile:path atomically:YES])
 	{
@@ -697,6 +786,9 @@
 	[preview removeAll];
 	[itemsData removeAll];
 	itemsData.wasChanged = NO;
+    [exportOnlyVisibleCheckBox setState:NSOffState];
+    [spriteSheetFileNameTextField setStringValue:@""];
+    [removeFileExtensionInSpriteSheetsCheckBox setState:NSOffState];
 	
 	[itemsTableView reloadData];
 	

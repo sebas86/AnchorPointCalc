@@ -316,7 +316,9 @@ static NSData *kTrue = NULL;
 
     [theData appendBytes:"{" length:1];
 
-    NSArray *theKeys = [inDictionary allKeys];
+    NSArray *theKeys = [[inDictionary allKeys] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        return [(NSString*)obj1 compare:obj2 options:NSCaseInsensitiveSearch];
+    }];
     NSEnumerator *theEnumerator = [theKeys objectEnumerator];
     NSString *theKey = NULL;
     while ((theKey = [theEnumerator nextObject]) != NULL)
